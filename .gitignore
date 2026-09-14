@@ -1,0 +1,35 @@
+# Build
+build/
+Builds/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# IDE
+.vscode/
+.idea/
+*.xcworkspace
+*.xcodeproj
+*.sln
+*.vcxproj*
+*.suo
+*.user
+
+# JUCE (if not using submodule carefully)
+# JUCE/   ← comment this if you want to commit JUCE
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+
+# Plugin binaries
+*.vst3
+*.component
+*.aaxplugin
+*.exe
