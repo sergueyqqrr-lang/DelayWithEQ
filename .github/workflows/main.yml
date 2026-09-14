@@ -1,35 +1,46 @@
-# Build
-build/
-Builds/
-cmake-build-*/
-CMakeCache.txt
-CMakeFiles/
-*.o
-*.a
-*.so
-*.dylib
-*.dll
+name: Build DelayWithEQ
 
-# IDE
-.vscode/
-.idea/
-*.xcworkspace
-*.xcodeproj
-*.sln
-*.vcxproj*
-*.suo
-*.user
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-# JUCE (if not using submodule carefully)
-# JUCE/   ← comment this if you want to commit JUCE
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
-# OS
-.DS_Store
-Thumbs.db
-*~
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
-# Plugin binaries
-*.vst3
-*.component
-*.aaxplugin
-*.exe
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libasound2-dev libjack-jackd2-dev \
+          ladspa-sdk libcurl4-openssl-dev libfreetype6-dev \
+          libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev \
+          libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+          libwebkit2gtk-4.1-dev libglu1-mesa-dev mesa-common-dev
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: DelayWithEQ-${{ matrix.os }}
+        path: |
+          build/**/*.vst3
+          build/**/*.component
+          build/**/*Standalone*
